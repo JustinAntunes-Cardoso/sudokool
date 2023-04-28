@@ -1,0 +1,76 @@
+table,
+td {
+	border: 1px solid black;
+	border-collapse: collapse;
+	width: 3rem;
+	height: 3rem;
+	padding: 0;
+}
+
+input {
+	outline: none;
+	border: none;
+	width: 3rem;
+	height: 3rem;
+	padding: 0;
+	text-align: center;
+}
+
+.sudoku__container {
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: center;
+	align-items: center;
+}
+
+.sudoku__buttons {
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-evenly;
+	margin: 2rem 0;
+}
+
+.sudoku__input {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	outline: none;
+	border: none;
+	width: 3rem;
+	height: 3rem;
+	padding: 0;
+	text-align: center;
+}
+
+.sudoku-table {
+	&__p0 {
+		border-top: 2px solid navy;
+		border-left: 2px solid navy;
+	}
+	&__p1 {
+		border-top: 2px solid navy;
+	}
+	&__p2 {
+		border-top: 2px solid navy;
+		border-right: 2px solid navy;
+	}
+	&__p3 {
+		border-left: 2px solid navy;
+	}
+	&__p4 {
+	}
+	&__p5 {
+		border-right: 2px solid navy;
+	}
+	&__p6 {
+		border-left: 2px solid navy;
+		border-bottom: 2px solid navy;
+	}
+	&__p7 {
+		border-bottom: 2px solid navy;
+	}
+	&__p8 {
+		border-right: 2px solid navy;
+		border-bottom: 2px solid navy;
+	}
+}
