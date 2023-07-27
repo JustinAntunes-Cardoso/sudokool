@@ -1,26 +1,29 @@
+import React from "react";
 import { Link } from "react-router-dom";
 
+
 type ButtonProps = {
-    difficulty: "easy" | "medium" | "hard"
+    difficulty: "easy" | "medium" | "hard",
+    isLoading: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const Button = ({ difficulty }: ButtonProps) => {
+const Button = ({ difficulty, isLoading }: ButtonProps) => {
     if (difficulty === "easy") {
         return (
             <Link to={"/easy"}>
-                <button onClick={() => 1/*onClick("easy")*/}>Easy</button>
+                <button onClick={() => isLoading(true)}>Easy</button>
             </Link>
         );
     } else if (difficulty === "medium") {
         return (
             <Link to={"/medium"}>
-                <button onClick={() => 1/*onClick("medium")*/}>Medium</button>
+                <button onClick={() => isLoading(true)}>Medium</button>
             </Link>
         );
     } else if (difficulty === "hard") {
         return (
             <Link to={"/hard"}>
-                <button onClick={() => 1/*onClick("hard")*/}>Hard</button>
+                <button onClick={() => isLoading(true)}>Hard</button>
             </Link>
         );
     } else {
