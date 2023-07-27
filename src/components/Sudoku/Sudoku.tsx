@@ -4,7 +4,8 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import Button from "../Button/Button";
 import { useParams } from "react-router-dom";
-const BOARD_URL = "http://localhost:8081";
+
+const BOARD_URL = "http://127.0.0.1:8000/";
 const BLANK_BOARD = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -37,22 +38,39 @@ const Sudoku = () => {
     const [board, setBoard] = useState(BLANK_BOARD);
     const [answer, setAnswer] = useState(BLANK_BOARD);
     const [inputValues, setInputValue] = useState(BLANK_INPUTS);
+    const [loading, setLoading] = useState(false);
     const { diff } = useParams();
 
     useEffect(() => {
         const getDefaultBoard = async () => {
-            const { data } = await axios.get(`${BOARD_URL}/game`);
-            setBoard(data[0]);
-            setAnswer(data[1]);
-            setInputValue(BLANK_INPUTS);
+            try {
+                const { data } = await axios.get(`${BOARD_URL}/api/sudoku/easy`);
+                console.log(data);
+                setBoard(data.board);
+                setAnswer(data.solved);
+                setInputValue(BLANK_INPUTS);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setTimeout(() => {
+                    setLoading(false);
+                }, 3000);
+            }
         };
         const getBoard = async () => {
-            const { data } = await axios.get(`${BOARD_URL}/game/${diff}`);
-            setBoard(BLANK_BOARD);
-            setBoard(data[0]);
-            setAnswer(data[1]);
-            setInputValue(BLANK_INPUTS);
-        };
+            try {
+                const { data } = await axios.get(`${BOARD_URL}/api/sudoku/${diff}`);
+                setBoard(data.board);
+                setAnswer(data.solved);
+                setInputValue(BLANK_INPUTS);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setTimeout(() => {
+                    setLoading(false);
+                }, 3000);
+            }
+        }
 
         diff ? getBoard() : getDefaultBoard();
     }, [diff]);
@@ -100,7 +118,8 @@ const Sudoku = () => {
 
     return (
         <div className="sudoku__container">
-            <p>{`${diff ? diff : "easy"} Puzzle`}</p>
+            <p>{`${diff ? diff : "Default"} Puzzle`}</p>
+            {loading ? '' : ''}
             <form onSubmit={submitHandler}>
                 <table className="sudoku-table">
                     <tbody>
@@ -147,9 +166,9 @@ const Sudoku = () => {
                 <button>Check</button>
             </form>
             <div className="sudoku__buttons">
-                <Button difficulty="easy" />
-                <Button difficulty="medium" />
-                <Button difficulty="hard" />
+                <Button difficulty="easy" isLoading={setLoading} />
+                <Button difficulty="medium" isLoading={setLoading} />
+                <Button difficulty="hard" isLoading={setLoading} />
             </div>
         </div>
     );
