@@ -4,6 +4,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import Button from "../Button/Button";
 import { useParams } from "react-router-dom";
+import LoadingModal from '../LoadingModal/LoadingModal'
 
 const BOARD_URL = "http://127.0.0.1:8000/";
 const BLANK_BOARD = [
@@ -119,7 +120,7 @@ const Sudoku = () => {
     return (
         <div className="sudoku__container">
             <p>{`${diff ? diff : "Default"} Puzzle`}</p>
-            {loading ? '' : ''}
+            {loading ? <LoadingModal /> : ''}
             <form onSubmit={submitHandler}>
                 <table className="sudoku-table">
                     <tbody>
