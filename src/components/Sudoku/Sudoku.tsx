@@ -40,6 +40,7 @@ const Sudoku = () => {
     const [answer, setAnswer] = useState(BLANK_BOARD);
     const [inputValues, setInputValue] = useState(BLANK_INPUTS);
     const [loading, setLoading] = useState(false);
+    const [isPressed, setButtonIsPressed] = useState(false);
     const { diff } = useParams();
 
     useEffect(() => {
@@ -74,7 +75,7 @@ const Sudoku = () => {
         }
 
         diff ? getBoard() : getDefaultBoard();
-    }, [diff]);
+    }, [diff, isPressed]);
 
     const handleInputChange = (index: string, value: string) => {
         if (Number.isNaN(Number(value))) return;
@@ -121,7 +122,7 @@ const Sudoku = () => {
         <div className="sudoku__container">
             <p>{`${diff ? diff : "Default"} Puzzle`}</p>
             {loading ? <LoadingModal /> : ''}
-            <form onSubmit={submitHandler}>
+            <form className='sudoku__form' onSubmit={submitHandler}>
                 <table className="sudoku-table">
                     <tbody>
                         {board.map((row, index) => {
@@ -164,12 +165,12 @@ const Sudoku = () => {
                         })}
                     </tbody>
                 </table>
-                <button>Check</button>
+                <button className="sudoku__check">Check</button>
             </form>
             <div className="sudoku__buttons">
-                <Button difficulty="easy" isLoading={setLoading} />
-                <Button difficulty="medium" isLoading={setLoading} />
-                <Button difficulty="hard" isLoading={setLoading} />
+                <Button difficulty="easy" isButtonPressed={setButtonIsPressed} isLoading={setLoading} />
+                <Button difficulty="medium" isButtonPressed={setButtonIsPressed} isLoading={setLoading} />
+                <Button difficulty="hard" isButtonPressed={setButtonIsPressed} isLoading={setLoading} />
             </div>
         </div>
     );
