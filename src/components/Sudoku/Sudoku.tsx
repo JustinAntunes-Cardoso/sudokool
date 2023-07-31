@@ -3,7 +3,6 @@ import "./Sudoku.scss";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import Button from "../Button/Button";
-import { useParams } from "react-router-dom";
 import LoadingModal from '../LoadingModal/LoadingModal'
 
 const BOARD_URL = "http://127.0.0.1:8000/";
@@ -41,27 +40,14 @@ const Sudoku = () => {
     const [inputValues, setInputValue] = useState(BLANK_INPUTS);
     const [loading, setLoading] = useState(false);
     const [isPressed, setButtonIsPressed] = useState(false);
-    const { diff } = useParams();
+    const [diff, setDifficulty] = useState('easy');
 
     useEffect(() => {
-        const getDefaultBoard = async () => {
-            try {
-                const { data } = await axios.get(`${BOARD_URL}/api/sudoku/easy`);
-                console.log(data);
-                setBoard(data.board);
-                setAnswer(data.solved);
-                setInputValue(BLANK_INPUTS);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setTimeout(() => {
-                    setLoading(false);
-                }, 3000);
-            }
-        };
+        //Makes API call to get new board
         const getBoard = async () => {
             try {
-                const { data } = await axios.get(`${BOARD_URL}/api/sudoku/${diff}`);
+                const { data } = diff ? await axios.get(`${BOARD_URL}/api/sudoku/${diff}`) :
+                    await axios.get(`${BOARD_URL}/api/sudoku/easy`);
                 setBoard(data.board);
                 setAnswer(data.solved);
                 setInputValue(BLANK_INPUTS);
@@ -74,7 +60,7 @@ const Sudoku = () => {
             }
         }
 
-        diff ? getBoard() : getDefaultBoard();
+        getBoard();
     }, [diff, isPressed]);
 
     const handleInputChange = (index: string, value: string) => {
@@ -168,9 +154,9 @@ const Sudoku = () => {
                 <button className="sudoku__check">Check</button>
             </form>
             <div className="sudoku__buttons">
-                <Button difficulty="easy" isButtonPressed={setButtonIsPressed} isLoading={setLoading} />
-                <Button difficulty="medium" isButtonPressed={setButtonIsPressed} isLoading={setLoading} />
-                <Button difficulty="hard" isButtonPressed={setButtonIsPressed} isLoading={setLoading} />
+                <Button difficulty="easy" isButtonPressed={setButtonIsPressed} isLoading={setLoading} setDifficulty={setDifficulty} />
+                <Button difficulty="medium" isButtonPressed={setButtonIsPressed} isLoading={setLoading} setDifficulty={setDifficulty} />
+                <Button difficulty="hard" isButtonPressed={setButtonIsPressed} isLoading={setLoading} setDifficulty={setDifficulty} />
             </div>
         </div>
     );
