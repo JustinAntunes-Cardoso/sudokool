@@ -4,7 +4,7 @@ import '@testing-library/jest-dom/extend-expect'; // Provides custom matchers li
 import Header from './Header'; // Import your Header component
 
 // Test case
-test('renders the image in the header', () => {
+it('renders the image in the header', () => {
     // Arrange
     const { getByAltText } = render(<Header />);
 

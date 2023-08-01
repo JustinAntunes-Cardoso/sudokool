@@ -8,9 +8,10 @@ describe('Loading', () => {
         render(<LoadingModal />);
 
         const content = 'Loading';
+        const text = 'A unique puzzle is being made.';
         // Ensure that the modal content is rendered
         expect(screen.getByText(content)).toBeInTheDocument();
-
+        expect(screen.getByText(text)).toBeInTheDocument();
     });
 })
 
