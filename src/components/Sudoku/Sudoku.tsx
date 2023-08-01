@@ -1,7 +1,7 @@
 
 import "./Sudoku.scss";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, createRef } from "react";
 import Button from "../Button/Button";
 import LoadingModal from '../LoadingModal/LoadingModal'
 
@@ -32,7 +32,7 @@ const BLANK_INPUTS: (number | string)[] = [
 
 let rowPos: number = 0;
 let colPos: number[] = [];
-let idPos: number = 0;
+let idPos: number = -1;
 
 const Sudoku = () => {
     const [board, setBoard] = useState(BLANK_BOARD);
@@ -41,10 +41,13 @@ const Sudoku = () => {
     const [loading, setLoading] = useState(false);
     const [isPressed, setButtonIsPressed] = useState(false);
     const [diff, setDifficulty] = useState('easy');
+    // Create an array to hold the refs
+    const cellRefs: React.RefObject<HTMLInputElement>[] = Array.from({ length: 81 }, () => createRef());
 
     useEffect(() => {
         //Makes API call to get new board
         const getBoard = async () => {
+            console.log('hello');
             try {
                 const { data } = diff ? await axios.get(`${BOARD_URL}/api/sudoku/${diff}`) :
                     await axios.get(`${BOARD_URL}/api/sudoku/easy`);
@@ -63,6 +66,7 @@ const Sudoku = () => {
         getBoard();
     }, [diff, isPressed]);
 
+    //Enters input values into state variable to be used as a checker with the answer key.
     const handleInputChange = (index: string, value: string) => {
         if (Number.isNaN(Number(value))) return;
 
@@ -71,16 +75,15 @@ const Sudoku = () => {
         setInputValue(inputArray);
     };
 
-    function submitHandler(e: any) {
+    const submitHandler = (e: any) => {
         e.preventDefault();
-        function getInput() {
+        const getInput = () => {
             const inputs = [];
             let id = 0;
-            console.log(inputValues);
             for (let i = 0; i < 9; i++) {
                 for (let j = 0; j < 9; j++) {
-                    id++;
                     board[i][j] === 0 ? inputs.push(Number(inputValues[id])) : inputs.push(board[i][j]);
+                    id++;
                 }
             }
 
@@ -88,20 +91,23 @@ const Sudoku = () => {
         }
         const input = getInput();
         let answerkey = [];
-        console.log(answer);
         for (let row of answer) {
             for (let col of row) {
                 answerkey.push(col);
             }
         }
-        console.log(answerkey);
+
+        let win = true
         for (let i = 0; i < answerkey.length; i++) {
             if (answerkey[i] !== input[i]) {
-                alert("Wrong Answer");
-                return;
+                cellRefs[i].current?.classList.add('error');
+                win = false
+            } else {
+                cellRefs[i].current?.classList.add('correct');
             }
         }
-        alert("Correct");
+
+        alert(win ? 'Congrats you won!' : 'Puzzle is not solved, \nPlease try again!')
     }
 
     return (
@@ -111,11 +117,12 @@ const Sudoku = () => {
             <form className='sudoku__form' onSubmit={submitHandler}>
                 <table className="sudoku-table">
                     <tbody>
-                        {board.map((row, index) => {
-                            rowPos = index % 3;
+                        {board.map((row, rowIndex) => {
+                            rowPos = rowIndex % 3;
                             return (
-                                <tr key={index}>
-                                    {row.map((col, index) => {
+                                <tr key={rowIndex}>
+                                    {row.map((col, colIndex) => {
+
                                         if (rowPos === 0) {
                                             colPos = [0, 1, 2];
                                         } else if (rowPos === 1) {
@@ -126,14 +133,14 @@ const Sudoku = () => {
                                         idPos++;
                                         return col !== 0 ? (
                                             <td
-                                                key={index}
-                                                className={`sudoku-table__p${colPos[index % 3]}`}>
+                                                key={colIndex}
+                                                className={`sudoku-table__p${colPos[colIndex % 3]}`}>
                                                 <div className="sudoku__input">{col}</div>
                                             </td>
                                         ) : (
                                             <td
-                                                key={index}
-                                                className={`sudoku-table__p${colPos[index % 3]}`}>
+                                                key={colIndex}
+                                                className={`sudoku-table__p${colPos[colIndex % 3]}`}>
                                                 <input
                                                     size={2}
                                                     autoComplete="off"
@@ -141,6 +148,7 @@ const Sudoku = () => {
                                                     id={`${idPos % 81}`}
                                                     name={`${idPos % 81}`}
                                                     value={inputValues[idPos % 81]}
+                                                    ref={cellRefs[rowIndex * 9 + colIndex]}
                                                     onChange={(event) => handleInputChange(event.target.id, event.target.value)}
                                                 />
                                             </td>
@@ -154,9 +162,9 @@ const Sudoku = () => {
                 <button className="sudoku__check">Check</button>
             </form>
             <div className="sudoku__buttons">
-                <Button difficulty="easy" isButtonPressed={setButtonIsPressed} isLoading={setLoading} setDifficulty={setDifficulty} />
-                <Button difficulty="medium" isButtonPressed={setButtonIsPressed} isLoading={setLoading} setDifficulty={setDifficulty} />
-                <Button difficulty="hard" isButtonPressed={setButtonIsPressed} isLoading={setLoading} setDifficulty={setDifficulty} />
+                <Button difficulty="easy" isButtonPressed={setButtonIsPressed} isLoading={setLoading} setDifficulty={setDifficulty} cellRefs={cellRefs} />
+                <Button difficulty="medium" isButtonPressed={setButtonIsPressed} isLoading={setLoading} setDifficulty={setDifficulty} cellRefs={cellRefs} />
+                <Button difficulty="hard" isButtonPressed={setButtonIsPressed} isLoading={setLoading} setDifficulty={setDifficulty} cellRefs={cellRefs} />
             </div>
         </div>
     );
