@@ -7,16 +7,21 @@ type ButtonProps = {
     difficulty: "easy" | "medium" | "hard",
     isButtonPressed: React.Dispatch<React.SetStateAction<boolean>>,
     isLoading: React.Dispatch<React.SetStateAction<boolean>>,
-    setDifficulty: React.Dispatch<React.SetStateAction<string>>
+    setDifficulty: React.Dispatch<React.SetStateAction<string>>,
+    cellRefs: React.RefObject<HTMLInputElement>[]
 }
 
-const Button = ({ difficulty, isButtonPressed, isLoading, setDifficulty }: ButtonProps) => {
+const Button = ({ difficulty, isButtonPressed, isLoading, setDifficulty, cellRefs }: ButtonProps) => {
 
     //Makes call to API when button is pressed
     const loadApiCall = () => {
         isButtonPressed((prevValue) => !prevValue);
         isLoading(true);
         setDifficulty(difficulty);
+        cellRefs.forEach(cell => {
+            cell.current?.classList.remove('correct');
+            cell.current?.classList.remove('error');
+        })
     }
 
     if (difficulty === "easy") {
