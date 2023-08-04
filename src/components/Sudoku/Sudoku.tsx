@@ -43,19 +43,20 @@ const Sudoku = () => {
     const [diff, setDifficulty] = useState('easy');
     // Create an array to hold the refs
     const cellRefs: React.RefObject<HTMLInputElement>[] = Array.from({ length: 81 }, () => createRef());
+    const [error, setError] = useState(false);
 
     useEffect(() => {
         //Makes API call to get new board
         const getBoard = async () => {
-            console.log('hello');
             try {
                 const { data } = diff ? await axios.get(`${BOARD_URL}/api/sudoku/${diff}`) :
                     await axios.get(`${BOARD_URL}/api/sudoku/easy`);
                 setBoard(data.board);
                 setAnswer(data.solved);
                 setInputValue(BLANK_INPUTS);
+                setError(false);
             } catch (error) {
-                console.error(error);
+                setError(true);
             } finally {
                 setTimeout(() => {
                     setLoading(false);
@@ -112,6 +113,7 @@ const Sudoku = () => {
 
     return (
         <div className="sudoku__container">
+            <p style={{ color: 'red' }}>{error ? 'Error fetching Sudoku puzzle' : <></>}</p>
             <p>{`${diff ? diff : "Default"} Puzzle`}</p>
             {loading ? <LoadingModal /> : ''}
             <form className='sudoku__form' onSubmit={submitHandler}>
@@ -159,7 +161,7 @@ const Sudoku = () => {
                         })}
                     </tbody>
                 </table>
-                <button className="sudoku__check">Check</button>
+                <button type="submit" name="check" className="sudoku__check">Check</button>
             </form>
             <div className="sudoku__buttons">
                 <Button difficulty="easy" isButtonPressed={setButtonIsPressed} isLoading={setLoading} setDifficulty={setDifficulty} cellRefs={cellRefs} />
