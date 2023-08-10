@@ -3,9 +3,12 @@ import "./Sudoku.scss";
 import axios from "axios";
 import { useState, useEffect, createRef } from "react";
 import Button from "../Button/Button";
-import LoadingModal from '../LoadingModal/LoadingModal'
+import LoadingModal from '../LoadingModal/LoadingModal';
 
-const BOARD_URL = "http://127.0.0.1:8000/";
+//API connection
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const API_ENDPOINT = process.env.REACT_APP_SUDOKU_PATH;
+
 const BLANK_BOARD = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -49,8 +52,8 @@ const Sudoku = () => {
         //Makes API call to get new board
         const getBoard = async () => {
             try {
-                const { data } = diff ? await axios.get(`${BOARD_URL}/api/sudoku/${diff}`) :
-                    await axios.get(`${BOARD_URL}/api/sudoku/easy`);
+                const { data } = diff ? await axios.get(`${API_BASE_URL}${API_ENDPOINT}${diff}`) :
+                    await axios.get(`${API_BASE_URL}${API_ENDPOINT}easy`);
                 setBoard(data.board);
                 setAnswer(data.solved);
                 setInputValue(BLANK_INPUTS);
@@ -114,7 +117,7 @@ const Sudoku = () => {
     return (
         <div className="sudoku__container">
             <p style={{ color: 'red' }}>{error ? 'Error fetching Sudoku puzzle' : <></>}</p>
-            <p>{`${diff ? diff : "Default"} Puzzle`}</p>
+            <p className="sudoku__title">{`${diff ? diff : "Default"} Puzzle`}</p>
             {loading ? <LoadingModal /> : ''}
             <form className='sudoku__form' onSubmit={submitHandler}>
                 <table className="sudoku-table">
